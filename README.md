@@ -1,6 +1,6 @@
 # Build a 3D rendering desktop app from scratch with Python
 
-<img src="images/thingy-01.jpg" width="960">
+<img src="Screenshots/GIF.gif" >
 
 >[YOUTUBE VIDEO](https://youtu.be/G0m2wwEppWA)
 
