@@ -14,7 +14,7 @@ import numpy as np
 
 LINE_COLOR = "#0000FF"
 POINT_SIZE = 2
-POINT_COLOR = '#ffffff'
+POINT_COLOR = '#000000'
 
 CANVAS_WIDTH = 840
 CANVAS_HEIGHT = 560
@@ -45,6 +45,14 @@ def DrawPoint(point, canvas):
                        fill = POINT_COLOR)
     return canvas
 
+def DrawTriangle(face, canvas, points):
+  points = [points[face[0]], 
+            points[face[1]], 
+            points[face[2]]]
+  canvas.create_polygon(points, outline = LINE_COLOR, fill = "")
+
+  return canvas
+
 def TransformPoint(point, rotation_x, rotation_y, rotation_z, zoom):
 
     #Here we rotate our point in the Y, X, and Z axis respectively
@@ -67,7 +75,7 @@ def TransformPoint(point, rotation_x, rotation_y, rotation_z, zoom):
     return x, y
 
 def CalculateMatrix(angle_x, angle_y, angle_z):
-  
+
   #These are the rotation matricies that will transform the point position
   #according to the desired rotation (Check some linear algebra course
   #if you wanna know more about em, otherwise, there's no huge need
@@ -103,18 +111,7 @@ def DrawObject(canvas, Verticies, Faces, angle_x, angle_y, angle_z, zoom):
     #Faces could be presented with more than 3 verticies, but for now,
     #we're only drawing triangles and ignoring the rest
     for face in Faces:
-            canvas = DrawLine(face[0],
-                              face[1],
-                              projected_points,
-                              canvas)
-            canvas = DrawLine(face[1],
-                              face[2],
-                              projected_points,
-                              canvas)
-            canvas = DrawLine(face[2],
-                              face[0],
-                              projected_points,
-                              canvas)
+      canvas = DrawTriangle(face, canvas, projected_points)
     return canvas
 
 if __name__ == '__main__':
