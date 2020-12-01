@@ -300,7 +300,7 @@ FILE_NAME = tk.StringVar()
 import_file_label = ttk.Label(root, textvariable = FILE_NAME,
                                     foreground = "#ffffff",
                                     background = "#131113")
-import_file_label.place(relx = 0.88,
+import_file_label.place(relx = 0.86,
                         rely = 0.817,
                         relheight = 0.035,
                         relwidth = 0.09,
