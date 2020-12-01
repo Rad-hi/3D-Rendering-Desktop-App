@@ -45,23 +45,7 @@ def DrawPoint(point, canvas):
                        fill = POINT_COLOR)
     return canvas
 
-def TransformPoint(point, angle_x, angle_y, angle_z, zoom):
-
-    #These are the rotation matricies that will transform the point position
-    #according to the desired rotation (Check some linear algebra course
-    #if you wanna know more about em, otherwise, there's no huge need
-    #to understand exactly how they work)
-    rotation_x = [[1, 0, 0],
-                  [0, math.cos(angle_x), -math.sin(angle_x)],
-                  [0, math.sin(angle_x), math.cos(angle_x)]]
-
-    rotation_y = [[math.cos(angle_y), 0, -math.sin(angle_y)],
-                  [0, 1, 0],
-                  [math.sin(angle_y), 0, math.cos(angle_y)]]
-
-    rotation_z = [[math.cos(angle_z), -math.sin(angle_z), 0],
-                  [math.sin(angle_z), math.cos(angle_z), 0],
-                  [0, 0 ,1]]
+def TransformPoint(point, rotation_x, rotation_y, rotation_z, zoom):
 
     #Here we rotate our point in the Y, X, and Z axis respectively
     rotated_2d = np.matmul(rotation_y, point)
@@ -82,16 +66,36 @@ def TransformPoint(point, angle_x, angle_y, angle_z, zoom):
 
     return x, y
 
+def CalculateMatrix(angle_x, angle_y, angle_z):
+  
+  #These are the rotation matricies that will transform the point position
+  #according to the desired rotation (Check some linear algebra course
+  #if you wanna know more about em, otherwise, there's no huge need
+  #to understand exactly how they work)
+  rotation_x = [[1, 0, 0],
+                [0, math.cos(angle_x), -math.sin(angle_x)],
+                [0, math.sin(angle_x), math.cos(angle_x)]]
+
+  rotation_y = [[math.cos(angle_y), 0, -math.sin(angle_y)],
+                [0, 1, 0],
+                [math.sin(angle_y), 0, math.cos(angle_y)]]
+
+  rotation_z = [[math.cos(angle_z), -math.sin(angle_z), 0],
+                [math.sin(angle_z), math.cos(angle_z), 0],
+                [0, 0 ,1]]
+  return rotation_x, rotation_y, rotation_z
+
 #This function is the one that orchestrates all the actions.
 #First is transforms the points, draws them, then draws the lines
 #according to the faces list
 def DrawObject(canvas, Verticies, Faces, angle_x, angle_y, angle_z, zoom):
     projected_points = {}
+    rot_x, rot_y, rot_z = CalculateMatrix(angle_x, angle_y, angle_z)
     for i in range(len(Verticies)):
         x, y = TransformPoint(Verticies[i+1],
-                              angle_x,
-                              angle_y,
-                              angle_z,
+                              rot_x,
+                              rot_y,
+                              rot_z,
                               zoom)
         projected_points[i+1] = [x, y]
         canvas = DrawPoint((x, y), canvas)
