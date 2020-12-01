@@ -49,6 +49,8 @@ def DrawTriangle(face, canvas, points):
   points = [points[face[0]], 
             points[face[1]], 
             points[face[2]]]
+  for point in points:
+    canvas = DrawPoint(point, canvas)
   canvas.create_polygon(points, outline = LINE_COLOR, fill = "")
 
   return canvas
@@ -106,7 +108,6 @@ def DrawObject(canvas, Verticies, Faces, angle_x, angle_y, angle_z, zoom):
                               rot_z,
                               zoom)
         projected_points[i+1] = [x, y]
-        canvas = DrawPoint((x, y), canvas)
 
     #Faces could be presented with more than 3 verticies, but for now,
     #we're only drawing triangles and ignoring the rest
