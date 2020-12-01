@@ -101,13 +101,13 @@ def CalculateMatrix(angle_x, angle_y, angle_z):
 def DrawObject(canvas, Verticies, Faces, angle_x, angle_y, angle_z, zoom):
     projected_points = {}
     rot_x, rot_y, rot_z = CalculateMatrix(angle_x, angle_y, angle_z)
-    for i in range(len(Verticies)):
-        x, y = TransformPoint(Verticies[i+1],
-                              rot_x,
-                              rot_y,
-                              rot_z,
-                              zoom)
-        projected_points[i+1] = [x, y]
+    for vertex in Verticies.items():
+      x, y = TransformPoint(vertex[1],
+                            rot_x,
+                            rot_y,
+                            rot_z,
+                            zoom)
+      projected_points[vertex[0]] = [x, y]
 
     #Faces could be presented with more than 3 verticies, but for now,
     #we're only drawing triangles and ignoring the rest
