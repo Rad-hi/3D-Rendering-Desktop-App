@@ -4,16 +4,28 @@ import numpy as np
 class GEOMETRY:
 
 	def __init__(self, canvas_width, canvas_height):
-		self.FILL = ""
-		self.OBJECT_POSITION = [canvas_width//2, canvas_height - 20]
-		self.OBJECT_SCALE = 2500
-		self._angle_x     = 0
-		self._angle_y     = 0
-		self._angle_z     = 0
-		self._zoom 	      = 1
-		self._faces 	  = []
-		self._verticies   = {}
-		self.LINE_COLOR	  = "#0000FF"
+		self.CANVAS_WIDTH    = canvas_width
+		self.CANVAS_HEIGHT   = canvas_height
+		self.OBJECT_POSITION = [canvas_width // 2, canvas_height - 20]
+		self.OBJECT_SCALE    = 2500
+		self._angle_x        = 0
+		self._angle_y        = 0
+		self._angle_z        = 0
+		self._zoom 	         = 20
+		self._faces 	     = []
+		self._verticies      = {}
+		self.FILL 			 = ""
+		self.POINT_COLOR	 = "#000000"
+		self.LINE_COLOR	     = "#0000FF"
+
+	def change_fill_color(self, color, no_fill = False):
+		if(no_fill):
+			self.FILL = ""
+		else:
+			self.FILL = color
+
+	def change_line_color(self, color):
+		self.LINE_COLOR = color
 
 	def update_position(self, x, y):
 		self.OBJECT_POSITION[0] += x
@@ -33,7 +45,14 @@ class GEOMETRY:
 		for face in self._faces:
 			to_draw = [points[face[i]] for i in range(len(face))]
 			for point in to_draw:
+				if(point[0] < 0 or 
+				   point[1] < 0 or 
+				   point[0] > self.CANVAS_WIDTH or 
+				   point[1] > self.CANVAS_HEIGHT):
+					continue # Don't draw points that are out of the screen
+
 				canvas = self._draw_point(point, canvas)
+
 			canvas.create_polygon(to_draw, outline = self.LINE_COLOR, fill = self.FILL)
 		return canvas
 
@@ -42,7 +61,7 @@ class GEOMETRY:
 		canvas.create_oval(point[0], point[1],
 						   point[0], point[1],
 						   width = POINT_SIZE,
-						   fill  = self.LINE_COLOR)
+						   fill  = self.POINT_COLOR)
 		return canvas
 
 	def reset_rotation(self):
@@ -51,14 +70,14 @@ class GEOMETRY:
 		self._angle_z = 0
 
 	def _transform_point(self, point, rotation_x, rotation_y, rotation_z):
-		#Here we rotate our point in the Y, X, and Z axis respectively
+		# Here we rotate our point in the Y, X, and Z axis respectively
 		rotated_2d = np.matmul(rotation_y, point)
 		rotated_2d = np.matmul(rotation_x, rotated_2d)
 		rotated_2d = np.matmul(rotation_z, rotated_2d)
 
-		#Projection matricies are also a tool in linear algebra that allow us
-		#to project "3D" objects on 2D screens and still precieve them as "3D"
-		z = 1/(self._zoom - rotated_2d[2][0])
+		# Projection matricies are also a tool in linear algebra that allow us
+		# to project "3D" objects on 2D screens and still precieve them as "3D"
+		z = 0.5 / (self._zoom - rotated_2d[2][0])
 		projection_matrix = [[z, 0, 0],
 							 [0, z, 0]]
 		projected_2d = np.matmul(projection_matrix, rotated_2d)

@@ -1,5 +1,7 @@
 from GUI import GUI
 
+import gc
+
 class main_:
     ''' Class that launches everything '''
 
@@ -17,3 +19,5 @@ class main_:
 
 if __name__ == '__main__':
     main_()
+
+gc.collect()
