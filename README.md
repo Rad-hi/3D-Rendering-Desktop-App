@@ -6,6 +6,19 @@
 
 ---
 
+## New version !
+
+This folder was changed as there was only 3 source files, now there exists **V1_SOURCE** and **V2_SOURCE** where the **V1** contains the original files (not recommended to use), and the **V2** contains the new version of the project that adapts an **OOP** approach and a cleaner code structure, as well as some enhancements along with some new features.
+
+**What's new?**
+
+- Rotation isn't continuous, instead it's a fixed amount of rotation
+- The canvas's color could be changed
+- The filling could be turned ON and OFF and the color could be customized
+- The line color could be customized  
+
+---
+
 ## Description
 
 This project was made as a practice for Python programming, Matrix maniulation, file processing, and general system engineering processes.
