@@ -20,7 +20,7 @@ class GUI(tk.Tk):
 
 	def __init__(self, title = '3D_Viz', min_size = (1165, 630)):
 		super().__init__()
-		self.file_exists = False
+		self.file_exists = False # A flag for whether the file has been loaded or not
 		self.changed = True # A flag used to only redraw the object when a change occured
 		self._geometry_handler = geometry.GEOMETRY(self.CANVAS_WIDTH, self.CANVAS_HEIGHT)
 		self._initialise_window(title, min_size)

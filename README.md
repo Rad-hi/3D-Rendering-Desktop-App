@@ -12,10 +12,19 @@ This folder was changed as there was only 3 source files, now there exists **V1_
 
 **What's new?**
 
-- Rotation isn't continuous, instead it's a fixed amount of rotation
-- The canvas's color could be changed
-- The filling could be turned ON and OFF and the color could be customized
-- The line color could be customized  
+- OOP approach
+
+- The 3D model is only redrawn (rerendered) when there's a change 
+
+- Faces are now being drawn **completely** (no matter how many vetrecies)
+
+- Points that aren't in the screen are no longer rendered
+
+- Rotation isn't continous, instead it's a custom degree on each axis
+
+- New controls for Line color, Filling color, canvas color
+
+- Filling could be turned ON and OFF
 
 ---
 

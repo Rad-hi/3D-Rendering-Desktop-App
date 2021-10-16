@@ -34,7 +34,7 @@ class GEOMETRY:
 	def draw_object(self, canvas):
 		projected_points = {}
 		
-		rot_x, rot_y, rot_z = self._calculate_matrix()
+		rot_x, rot_y, rot_z = self._calculate_rot_matrix()
 		for vertex in self._verticies.items():
 			x, y = self._transform_point(vertex[1], rot_x, rot_y, rot_z)
 			projected_points[vertex[0]] = [x, y]
@@ -91,7 +91,7 @@ class GEOMETRY:
 
 		return x, y
 
-	def _calculate_matrix(self):
+	def _calculate_rot_matrix(self):
 		# These are the rotation matricies that will transform the point position
 		# according to the desired rotation (Check some linear algebra course
 		# if you wanna know more about them, otherwise, there's no huge need
