@@ -2,7 +2,9 @@
 
 <img src="Screenshots/GIF.gif" >
 
->[YOUTUBE VIDEO](https://youtu.be/G0m2wwEppWA)
+> [V1 Demo YouTube video](https://youtu.be/G0m2wwEppWA)
+
+> [V2 Code walkthrough YouTube video](https://youtu.be/Ca8nKtICYMk)
 
 ---
 
@@ -13,34 +15,30 @@ This folder was changed as there was only 3 source files, now there exists **V1_
 **What's new?**
 
 - OOP approach
-
 - The 3D model is only redrawn (rerendered) when there's a change 
-
 - Faces are now being drawn **completely** (no matter how many vetrecies)
-
 - Points that aren't in the screen are no longer rendered
-
 - Rotation isn't continous, instead it's a custom degree on each axis
-
 - New controls for Line color, Filling color, canvas color
-
 - Filling could be turned ON and OFF
 
 ---
 
 ## Description
 
-This project was made as a practice for Python programming, Matrix maniulation, file processing, and general system engineering processes.
+This project was made as a practice for Python programming, Matrix manipulation, file processing, and general system engineering processes.
 
 Also it was a way for me to explore an interesting field for me which is graphics (2D, and 3D).
 
-It's a desktop app that takes in waveform files (.OBJ) and visualizes its triangulated form (no filliing, no shading, no texturing! just triangles)
+It's a desktop app that takes in waveform files (.OBJ) and visualizes its triangulated form ~(no filliing, no shading, no texturing! just triangles)~ 
+
+The **V2** (V2_SOURCE) of the project adds a filling option with control over the color of the filling as well as whether it's turned ON or OFF.
 
 ### Key Words
 
-- Python: Numpy, Tkinter, re (regex), PIL.
+- Python: Numpy, Tkinter, re (regex), 3D graphics.
 
-- Waveform (.OBJ). 
+- Waveform files (.OBJ). 
 
 ---
 
@@ -48,11 +46,7 @@ It's a desktop app that takes in waveform files (.OBJ) and visualizes its triang
 
 This article assumes having basic knowledge of Python, Tkinter, and Numpy, since these will not be covered here.
 
----
-
-## Waveform files (.OBJ)
-
-I recommend reading this [article in Wikipedia](https://en.wikipedia.org/wiki/Wavefront_.obj_file).
+**About waveform files (.OBJ)**, I recommend reading this [article in Wikipedia](https://en.wikipedia.org/wiki/Wavefront_.obj_file).
 
 Or if you're not into reading, watch this [YouTube video](https://www.youtube.com/watch?v=KMWUjNE0fYI)
 
@@ -61,6 +55,10 @@ Or if you're not into reading, watch this [YouTube video](https://www.youtube.co
 ## How to use
 
 ### Dependecies:
+
+**New contribution**: Our friend @http-samc added *requirements.txt* to the project and made it easier to install all dependencies (this is the preferred way to do this) through running this command ```pip3 install -r V2_SOURCE/requirements.txt```.
+
+---
 
 You'll have to have these libraries along with Python in your PC:
 
@@ -78,7 +76,7 @@ You'll have to have these libraries along with Python in your PC:
 
 - This interface will open:
 
-<img src="Screenshots/interface.png" width="960">
+<img src="Screenshots/Interface_V2.png" width="960">
 
 - You can load any .obj file you want, or you can choose from the files 
 provided in the /Objects folder.
@@ -88,6 +86,12 @@ provided in the /Objects folder.
 - You can zoom in and out, or rotate the model in 3 axis.
 
 - You can take screenshots too with the "Take screenshot" button.
+
+**New in V2**
+
+- You can turn ON and OFF the filling.
+
+- You can change the canvas color, the lines color, and the filling color.
 
 ---
 
