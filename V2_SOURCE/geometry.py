@@ -30,10 +30,10 @@ class GEOMETRY:
 	def update_position(self, x, y):
 		self.OBJECT_POSITION[0] += x
 		self.OBJECT_POSITION[1] += y
-	
+
 	def draw_object(self, canvas):
 		projected_points = {}
-		
+
 		rot_x, rot_y, rot_z = self._calculate_rot_matrix()
 		for vertex in self._verticies.items():
 			x, y = self._transform_point(vertex[1], rot_x, rot_y, rot_z)
@@ -45,9 +45,9 @@ class GEOMETRY:
 		for face in self._faces:
 			to_draw = [points[face[i]] for i in range(len(face))]
 			for point in to_draw:
-				if(point[0] < 0 or 
-				   point[1] < 0 or 
-				   point[0] > self.CANVAS_WIDTH or 
+				if(point[0] < 0 or
+				   point[1] < 0 or
+				   point[0] > self.CANVAS_WIDTH or
 				   point[1] > self.CANVAS_HEIGHT):
 					continue # Don't draw points that are out of the screen
 
@@ -81,9 +81,9 @@ class GEOMETRY:
 		projection_matrix = [[z, 0, 0],
 							 [0, z, 0]]
 		projected_2d = np.matmul(projection_matrix, rotated_2d)
-		
+
 		x = int(projected_2d[0][0] * self.OBJECT_SCALE) + self.OBJECT_POSITION[0]
-		
+
 		# The (-) sign in the Y is because the canvas' Y axis starts
 		# from Top to Bottom, so without the (-) sign, our objects
 		# would be presented upside down

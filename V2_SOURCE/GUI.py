@@ -35,7 +35,7 @@ class GUI(tk.Tk):
 	def _create_widgets(self):
 		self._create_canvas()
 		self._create_zoom_slider()
-		
+
 		ttk.Separator(self, orient = "horizontal")\
 		   .place(relx = self.COMMON_X, rely = 0.160, relwidth = 0.2, anchor = "ne")
 
@@ -48,7 +48,7 @@ class GUI(tk.Tk):
 		self._create_up_down_left_right_buttons()
 		self._create_color_pickers()
 		self._create_fill_check()
-	
+
 	def _create_canvas(self):
 		self.canvas_color  = tk.StringVar()
 		self.canvas_color.set("#FFFFFF")
@@ -65,11 +65,11 @@ class GUI(tk.Tk):
 		self.zoom_slider = ttk.Scale(self, from_ = 0.1, to = 1000, orient = "horizontal", command = self._changed)
 		self.zoom_slider.set(self._geometry_handler._zoom)
 		self.zoom_slider.place(relx = self.COMMON_X, rely = 0.088, relheight = 0.04, relwidth = 0.2, anchor = "ne")
-		
+
 	def _create_x_rot_slider(self):
 		ttk.Label(self, text = "X Rotation:", foreground = "#ffffff", background = "#131113")\
 		   .place(relx = self.COMMON_X, rely = 0.184, relheight = 0.035, relwidth = 0.2, anchor = "ne")
-		
+
 		self.x_rotation_slider = ttk.Scale(self, from_ = -math.pi, to = math.pi, orient = "horizontal", command = self._changed)
 		self.x_rotation_slider.set(0)
 		self.x_rotation_slider.place(relx = self.COMMON_X, rely = 0.220, relheight = 0.04, relwidth = 0.2, anchor = "ne")
@@ -77,7 +77,7 @@ class GUI(tk.Tk):
 	def _create_y_rot_slider(self):
 		ttk.Label(self, text = "Y Rotation:", foreground = "#ffffff", background = "#131113")\
 		   .place(relx = self.COMMON_X, rely = 0.294, relheight = 0.035, relwidth = 0.2, anchor = "ne")
-		
+
 		self.y_rotation_slider = ttk.Scale(self, from_ = -math.pi, to = math.pi, orient = "horizontal", command = self._changed)
 		self.y_rotation_slider.set(0)
 		self.y_rotation_slider.place(relx = self.COMMON_X, rely = 0.330, relheight = 0.04, relwidth = 0.2, anchor = "ne")
@@ -85,7 +85,7 @@ class GUI(tk.Tk):
 	def _create_z_rot_slider(self):
 		ttk.Label(self, text = "Z Rotation:", foreground = "#ffffff", background = "#131113")\
 		   .place(relx = self.COMMON_X, rely = 0.394, relheight = 0.035, relwidth = 0.2, anchor = "ne")
-		
+
 		self.z_rotation_slider = ttk.Scale(self, from_ = -math.pi, to = math.pi, orient = "horizontal", command = self._changed)
 		self.z_rotation_slider.set(0)
 		self.z_rotation_slider.place(relx = self.COMMON_X, rely = 0.430, relheight = 0.04, relwidth = 0.2, anchor = "ne")
@@ -93,19 +93,19 @@ class GUI(tk.Tk):
 	def _create_reset_rot_button(self):
 		ttk.Button(self, text = "Reset rotation", command = self._reset_rotation)\
 		   .place(relx = self.COMMON_X, rely = 0.505, relheight = 0.05, relwidth = 0.095, anchor = "ne")
-	
+
 	def _create_import_file_button(self):
 		ttk.Button(self, text = "Take a screenshot", command = self._take_screenshot)\
 		   .place(relx = self.COMMON_X, rely = 0.895, relheight = 0.05, relwidth = 0.2, anchor = "ne")
-	
+
 	def _create_screenshot_button(self):
 		self.FILE_NAME = tk.StringVar()
 		ttk.Label(self, textvariable = self.FILE_NAME, foreground = "#ffffff", background = "#131113")\
 		   .place(relx = 0.86, rely = 0.817, relheight = 0.035, relwidth = 0.09, anchor="ne")
-		
+
 		ttk.Button(self, text = "Import file", command = self._read_file)\
 		   .place(relx = self.COMMON_X, rely = 0.815, relheight = 0.05, relwidth = 0.095, anchor="ne")
-	
+
 	def _create_up_down_left_right_buttons(self):
 		# Common values for placements of the buttons
 		COMM_X = 0.89
@@ -137,7 +137,7 @@ class GUI(tk.Tk):
 		# FILL
 		self.fill_color  = tk.StringVar()
 		self.fill_color.set("#000000")
-		
+
 		ttk.Label(self, text = "Fill color:", foreground = "#ffffff", background = "#131113")\
 		   .place(relx = 0.08, rely = COMM_Y - 0.01, relheight = 0.035, anchor = "ne")
 
@@ -148,7 +148,7 @@ class GUI(tk.Tk):
 		# LINE
 		self.line_color  = tk.StringVar()
 		self.line_color.set("#0000FF")
-		
+
 		ttk.Label(self, text = "Line color:", foreground = "#ffffff", background = "#131113")\
 		   .place(relx = 0.24, rely = COMM_Y - 0.01, relheight = 0.035, anchor = "ne")
 
@@ -165,7 +165,7 @@ class GUI(tk.Tk):
 
 	def _create_fill_check(self):
 		self._check_no_fill = tk.IntVar()
-		
+
 		ttk.Checkbutton(self, text = "No fill", variable = self._check_no_fill, command = self._changed, onvalue = True, offvalue = False)\
 		   .place(relx = 0.704, rely = 0.91, relheight = 0.035)
 
@@ -224,18 +224,18 @@ class GUI(tk.Tk):
 		SAVE_PATH = filedialog.asksaveasfilename(defaultextension = ".png",
 												 filetypes = (("PNG Files", "*.png"),
 												 ("All Files", "*.*")))
-		
+
 		#Check if they actually saved and didn't exit before saving
 		if SAVE_PATH:
 			screenshot.save(SAVE_PATH)
 
 	def _read_file(self):
 		messagebox.showinfo(message = 'Only .obj files are compatible!', title = "WARNING")
-		
+
 		file_path = filedialog.askopenfilename(defaultextension = ".obj",
 											   filetypes = (("OBJ Files", "*.obj"),
 											   ("All Files", "*.*")))
-		
+
 		if len(file_path) and file_path[-4:] != ".obj":
 			messagebox.showinfo(message = "Incompatible file format", title = "ERROR")
 
@@ -249,15 +249,15 @@ class GUI(tk.Tk):
 	def _move_up(self):
 		self._geometry_handler.update_position(0, -1 * self.MOVING_STEP)
 		self._changed()
-	
+
 	def _move_down(self):
 		self._geometry_handler.update_position(0, self.MOVING_STEP)
 		self._changed()
-	
+
 	def _move_left(self):
 		self._geometry_handler.update_position(-1 * self.MOVING_STEP, 0)
 		self._changed()
-	
+
 	def _move_right(self):
 		self._geometry_handler.update_position(self.MOVING_STEP, 0)
 		self._changed()
@@ -268,7 +268,7 @@ class GUI(tk.Tk):
 		if(self.file_exists and self.changed):
 			#Delete all the previous points and lines in order to draw new ones
 			self.canvas.delete("all")
-			
+
 			self._set_colors()
 			self.canvas = self._geometry_handler.draw_object(self.canvas)
 			self.changed = False
