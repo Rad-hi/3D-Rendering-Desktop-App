@@ -5,15 +5,15 @@ import re
 def extract_data(file):
     """
     @brief: This function takes in a .obj file and returns a list containing
-            the indexes of the vertexes that make up the face, and a dict 
+            the indexes of the vertexes that make up the face, and a dict
             that contains the index of the vertex, along with its coordinates
-    
+
     @param: .obj file
-    
+
     @ret  : verticies (the dict containing coordinates)
     @ret  : faces (the list containing the vertexes' indexes)
     """
-    
+
     verticies = {}
     faces = []
     v = 1 # First vertex (one indexed)
@@ -25,7 +25,7 @@ def extract_data(file):
     #   * If the line starts with a "f", then that's a face and what follows is
     #     the list of verticies to be connected to create a face
     #     (formatted a bit strangely though, I recommend checking an example)
-    
+
     for line in file.readlines():
         if line[0:2] == "v ":
             verticies[v] = [[float(x)] for x in re.findall("[-+]?[.]?[\d]+(?:,\d\d\d)*[\.]?\d*(?:[eE][-+]?\d+)?", line)]
