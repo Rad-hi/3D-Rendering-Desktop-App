@@ -1,4 +1,4 @@
-from src.obj_files_handler import extract_data
+import src.obj_files_handler as obj_files_handler 
 from src.geometry import Geometry
 
 import math
