@@ -32,7 +32,7 @@ Also it was a way for me to explore an interesting field for me which is graphic
 
 It's a desktop app that takes in waveform files (.OBJ) and visualizes its triangulated form ~(no filliing, no shading, no texturing! just triangles)~ 
 
-The **V2** (V2_SOURCE) of the project adds a filling option with control over the color of the filling as well as whether it's turned ON or OFF.
+The **V2** (Legacy_versions/V2_SOURCE) of the project adds a filling option with control over the color of the filling as well as whether it's turned ON or OFF.
 
 ### Key Words
 
