@@ -1,0 +1,12 @@
+asgiref==3.4.1
+Django==3.2.8
+EasyProcess==0.3
+entrypoint2==0.2.4
+image==1.5.33
+mss==6.1.0
+numpy==1.21.2
+Pillow==8.4.0
+pyscreenshot==3.0
+pytz==2021.3
+six==1.16.0
+sqlparse==0.4.2
