@@ -56,15 +56,15 @@ Or if you're not into reading, watch this [YouTube video](https://www.youtube.co
 
 ### Dependecies:
 
-**New contribution**: Our friend [@http-samc](https://github.com/http-samc) added *requirements.txt* to the project and made it easier to install all dependencies (this is the preferred way to do this) through running this command ```pip3 install -r V2_SOURCE/requirements.txt```.
+**New contribution**: Our friend [@http-samc](https://github.com/http-samc) added *requirements.txt* to the project and made it easier to install all dependencies (this is the preferred way to do this) through running this command ```pip3 install -r requirements.txt```.
 
 ---
 
-You'll have to have these libraries along with Python in your PC:
+You'll have to have these libraries along with Python in your PC ```pip3 install -r requirements.txt``` :
 
 - Numpy
 
-- Tkinter (if you're running Linux, you'll have to install it, otherwise, it comes with Python when installed)
+- Tkinter (if you're running Linux, you'll have to install it ```sudo apt-get install python3-tk``` , otherwise, it comes with Python when installed)
 
 - The 3 files provided in this repo located in the same folder.
 
