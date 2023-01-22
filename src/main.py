@@ -1,4 +1,4 @@
-from src.gui import GUI
+from gui import GUI
 
 import gc
 

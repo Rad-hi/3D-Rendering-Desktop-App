@@ -1,5 +1,5 @@
-import src.obj_files_handler as obj_files_handler 
-from src.geometry import Geometry
+import obj_files_handler as obj_files_handler 
+from geometry import Geometry
 
 import math
 
