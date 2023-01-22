@@ -14,10 +14,16 @@ def time_me(f):
 
 class Geometry:
 	'''
+	Geometry handling class (linear algebra)
 	'''
+	
+	# More than 4 cores is just useless
+	NUM_PROCESSES = 4 #os.cpu_count()
+	
 	def __init__(self, canvas_width: int, canvas_height: int) -> None:
 		'''
 		'''
+
 		self.CANVAS_WIDTH = canvas_width
 		self.CANVAS_HEIGHT = canvas_height
 		self.OBJECT_SCALE = 2500 # Maybe make this dynamic depending on the object size
@@ -55,13 +61,11 @@ class Geometry:
 		indexes_list = list(self._verticies.keys())
 		points_list = list(self._verticies.values())
 		
-		# More than 4 cores is just useless
-		NUM_PROCESSES = 4 #os.cpu_count()
-		SEGMENT_LEN = len(indexes_list)//NUM_PROCESSES
+		SEGMENT_LEN = len(indexes_list)//self.NUM_PROCESSES
 
-		for i in range(NUM_PROCESSES):
+		for i in range(self.NUM_PROCESSES):
 			# The last one shall grab all the points left (difference is an extra point)
-			if i == NUM_PROCESSES-1:
+			if i == self.NUM_PROCESSES-1:
 				idx = indexes_list[i*SEGMENT_LEN:]
 				pts = points_list[i*SEGMENT_LEN:]
 			else:
@@ -71,7 +75,7 @@ class Geometry:
 			Process(target=self.__trasform_and_package_points, args=([idx, pts, rot_x, rot_y, rot_z])).start()
 		
 		all_points = {}
-		for _ in range(NUM_PROCESSES):
+		for _ in range(self.NUM_PROCESSES):
 			all_points.update(self.pts_q.get())
 
 		return all_points
