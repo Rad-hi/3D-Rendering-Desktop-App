@@ -1,5 +1,15 @@
 import math
 import numpy as np
+import time 
+
+def time_me(f):
+	'''Decorator function to time functions' runtime in ms'''
+	def wrapper(*args, **kwargs):
+		start = time.time()
+		res = f(*args, **kwargs)
+		print(f'function: {f.__name__} took {(time.time()-start)*1000:.4f}ms')
+		return res
+	return wrapper
 
 class Geometry:
 
@@ -30,15 +40,18 @@ class Geometry:
 	def update_position(self, x, y):
 		self.OBJECT_POSITION[0] += x
 		self.OBJECT_POSITION[1] += y
-
-	def draw_object(self, canvas):
+	
+	@time_me
+	def transform_object(self):
 		projected_points = {}
-
 		rot_x, rot_y, rot_z = self._calculate_rot_matrix()
 		for vertex in self._verticies.items():
 			x, y = self._transform_point(vertex[1], rot_x, rot_y, rot_z)
 			projected_points[vertex[0]] = [x, y]
+		return projected_points
 
+	def draw_object(self, canvas):
+		projected_points = self.transform_object()
 		return self._draw_face(canvas, projected_points)
 
 	def _draw_face(self, canvas, points):
