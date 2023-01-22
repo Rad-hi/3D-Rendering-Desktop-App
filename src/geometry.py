@@ -1,5 +1,16 @@
+from multiprocessing import Process, Queue
 import math
 import numpy as np
+import time
+
+def time_me(f):
+	'''Decorator function to time functions' runtime in ms'''
+	def wrapper(*args, **kwargs):
+		start = time.time()
+		res = f(*args, **kwargs)
+		print(f'function: {f.__name__} took {(time.time()-start)*1000:.4f}ms')
+		return res
+	return wrapper
 
 class Geometry:
 	'''
@@ -19,20 +30,50 @@ class Geometry:
 		self._faces = []
 		self._verticies = {}
 
+		# Thread safe queue for the mutiple cores to be able to split the work
+		self.pts_q = Queue()
+
 	def update_position(self, x: int, y: int) -> None:
 		'''Update x, y position of the object'''
 		self._obj_position[0] += x
 		self._obj_position[1] += y
 
+	def __trasform_and_package_point(self, idx_list, pt_list, rot_x, rot_y, rot_z):
+		projected_points = {}
+		for idx, pt in zip(idx_list, pt_list):
+			x, y = self.__transform_point(pt, rot_x, rot_y, rot_z)
+			projected_points[idx] = [x, y]
+		self.pts_q.put(projected_points)
+		
+	@time_me
 	def transform_object(self) -> dict:
 		'''Retur the points of the object transformed according to the current position'''
-		projected_points = {}
 		rot_x, rot_y, rot_z = self.__calculate_rot_matrix()
-		for idx, point in self._verticies.items():
-			x, y = self.__transform_point(point, rot_x, rot_y, rot_z)
-			projected_points[idx] = [x, y]
-		return projected_points
 
+		indexes_list = list(self._verticies.keys())
+		points_list = list(self._verticies.values())
+		NUM_PROCESSES = 4#os.cpu_count()
+		SEGMENT_LEN = len(indexes_list)//NUM_PROCESSES
+
+		process_list = []
+		for i in range(NUM_PROCESSES):
+			# The last one shall grab all the points left
+			if i == NUM_PROCESSES-1:
+				idx = indexes_list[i*SEGMENT_LEN:]
+				pts = points_list[i*SEGMENT_LEN:]
+			else:
+				idx = indexes_list[i*SEGMENT_LEN:(i+1)*SEGMENT_LEN]
+				pts = points_list[i*SEGMENT_LEN:(i+1)*SEGMENT_LEN]
+
+			p = Process(target=self.__trasform_and_package_point, args=([idx, pts, rot_x, rot_y, rot_z]))
+			process_list.append(p)
+			p.start()
+		
+		all_points = {}
+		for p in process_list:
+			all_points.update(self.pts_q.get())
+
+		return all_points
 	@property
 	def faces(self) -> list:
 		'''Get the faces formed between the points'''

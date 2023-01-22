@@ -2,10 +2,8 @@ import obj_files_handler as obj_files_handler
 from geometry import Geometry
 
 import math
-
 import tkinter as tk
 from tkinter import ttk, filedialog, colorchooser, messagebox
-from PIL import Image
 import pyscreenshot as ImageGrab
 
 class GUI(tk.Tk):
