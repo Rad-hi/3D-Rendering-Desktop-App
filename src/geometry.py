@@ -38,7 +38,8 @@ class Geometry:
 		self._obj_position[0] += x
 		self._obj_position[1] += y
 
-	def __trasform_and_package_point(self, idx_list, pt_list, rot_x, rot_y, rot_z):
+	def __trasform_and_package_points(self, idx_list, pt_list, rot_x, rot_y, rot_z):
+		'''Transforms a list of points and packages them into index:point pairs for drawing'''
 		projected_points = {}
 		for idx, pt in zip(idx_list, pt_list):
 			x, y = self.__transform_point(pt, rot_x, rot_y, rot_z)
@@ -50,14 +51,16 @@ class Geometry:
 		'''Retur the points of the object transformed according to the current position'''
 		rot_x, rot_y, rot_z = self.__calculate_rot_matrix()
 
+		# Going to slice these and distribute them on the available processes
 		indexes_list = list(self._verticies.keys())
 		points_list = list(self._verticies.values())
-		NUM_PROCESSES = 4#os.cpu_count()
+		
+		# More than 4 cores is just useless
+		NUM_PROCESSES = 4 #os.cpu_count()
 		SEGMENT_LEN = len(indexes_list)//NUM_PROCESSES
 
-		process_list = []
 		for i in range(NUM_PROCESSES):
-			# The last one shall grab all the points left
+			# The last one shall grab all the points left (difference is an extra point)
 			if i == NUM_PROCESSES-1:
 				idx = indexes_list[i*SEGMENT_LEN:]
 				pts = points_list[i*SEGMENT_LEN:]
@@ -65,15 +68,14 @@ class Geometry:
 				idx = indexes_list[i*SEGMENT_LEN:(i+1)*SEGMENT_LEN]
 				pts = points_list[i*SEGMENT_LEN:(i+1)*SEGMENT_LEN]
 
-			p = Process(target=self.__trasform_and_package_point, args=([idx, pts, rot_x, rot_y, rot_z]))
-			process_list.append(p)
-			p.start()
+			Process(target=self.__trasform_and_package_points, args=([idx, pts, rot_x, rot_y, rot_z])).start()
 		
 		all_points = {}
-		for p in process_list:
+		for _ in range(NUM_PROCESSES):
 			all_points.update(self.pts_q.get())
 
 		return all_points
+	
 	@property
 	def faces(self) -> list:
 		'''Get the faces formed between the points'''
