@@ -1,2 +1,4 @@
 numpy==1.21.2
 pyscreenshot==3.0
+numba==0.56.4
+sv-ttk==2.4
