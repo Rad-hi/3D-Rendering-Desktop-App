@@ -6,6 +6,8 @@ import tkinter as tk
 from tkinter import ttk, filedialog, colorchooser, messagebox
 import pyscreenshot as ImageGrab
 
+import sv_ttk
+
 class GUI(tk.Tk):
 	''''''
 	BACKGROUND_COLOR = '#131313'
@@ -20,6 +22,9 @@ class GUI(tk.Tk):
 	def __init__(self, title = '3D_Viz', min_size = (1165, 630)):
 		''''''
 		super().__init__()
+		# Set the theme to be dark (there must be an initialized app)
+		#sv_ttk.set_theme("dark")
+		
 		self._file_exists = False # A flag for whether the file has been loaded or not
 		self._changed = True # A flag used to only redraw the object when a change occured
 		self._geometry_handler = Geometry(self.CANVAS_WIDTH, self.CANVAS_HEIGHT)
@@ -65,7 +70,7 @@ class GUI(tk.Tk):
 
 	def __create_zoom_slider(self):
 		ttk.Label(self, text="Zoom:", foreground="#ffffff", background="#131113").place(relx=self.COMMON_X, rely=0.052, relheight=0.035, relwidth=0.2, anchor="ne")
-		self.zoom_slider = ttk.Scale(self, from_=0.1, to=1000, orient="horizontal", command=self.__changed)
+		self.zoom_slider = ttk.Scale(self, from_=2000, to=2, orient="horizontal", command=self.__changed)
 		self.zoom_slider.set(self._geometry_handler.zoom)
 		self.zoom_slider.place(relx=self.COMMON_X, rely=0.088, relheight=0.04, relwidth=0.2, anchor="ne")
 
@@ -208,7 +213,7 @@ class GUI(tk.Tk):
 			self.FILE_NAME.set(file_path.split('/')[-1])
 			self.__reset_rotation()
 			with open(file_path) as file:
-				self._geometry_handler._verticies, self._geometry_handler._faces = obj_files_handler.extract_data(file)
+				self._geometry_handler.upload_object(*obj_files_handler.extract_data(file))
 				self._file_exists = True
 
 	def __move_up(self):
@@ -266,14 +271,16 @@ class GUI(tk.Tk):
 		for face in self._geometry_handler.faces:
 			# Grab the points that make up that specific face
 			to_draw = [points[f] for f in face]
-			for point in to_draw:
-				if(point[0] < 0 or
-				   point[1] < 0 or
-				   point[0] > self.CANVAS_WIDTH or
-				   point[1] > self.CANVAS_HEIGHT
-				):
-					continue # Don't draw points that are out of the screen
-				self.__draw_point(point)
+			
+			#for point in to_draw:
+			#	if(point[0] < 0 or
+			#	   point[1] < 0 or
+			#	   point[0] > self.CANVAS_WIDTH or
+			#	   point[1] > self.CANVAS_HEIGHT
+			#	):
+			#		continue # Don't draw points that are out of the screen
+				#This is the slowest part of the GUI
+				#self.__draw_point(point)
 
 			self._canvas.create_polygon(to_draw, outline=self._line_color_holder, fill=self._fill_color_holder)
 	
