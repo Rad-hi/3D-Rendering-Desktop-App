@@ -8,6 +8,9 @@ import pyscreenshot as ImageGrab
 
 import sv_ttk
 
+MIN_WIDTH = 1165
+MIN_HEIGHT = 630
+
 class GUI(tk.Tk):
 	''''''
 	BACKGROUND_COLOR = '#131313'
@@ -19,7 +22,7 @@ class GUI(tk.Tk):
 	POINT_SIZE = 1 
 	POINT_COLOR = '#131313'
 
-	def __init__(self, title = '3D_Viz', min_size = (1165, 630)):
+	def __init__(self, title='3D_Viz', min_size=(MIN_WIDTH, MIN_HEIGHT)):
 		''''''
 		super().__init__()
 		# Set the theme to be dark (there must be an initialized app)
@@ -28,6 +31,9 @@ class GUI(tk.Tk):
 		self._file_exists = False # A flag for whether the file has been loaded or not
 		self._changed = True # A flag used to only redraw the object when a change occured
 		self._geometry_handler = Geometry(self.CANVAS_WIDTH, self.CANVAS_HEIGHT)
+		
+		self._canvas_w = int((self.CANVAS_WIDTH/MIN_WIDTH)*MIN_WIDTH)
+		self._canvas_h = int((self.CANVAS_HEIGHT/MIN_HEIGHT)*MIN_HEIGHT)
 		
 		self._fill_color_holder = "#000000"
 		self._line_color_holder = "#0000FF"
@@ -65,8 +71,9 @@ class GUI(tk.Tk):
 	def __create_canvas(self):
 		self._canvas_color = tk.StringVar()
 		self._canvas_color.set("#FFFFFF")
-		self._canvas = tk.Canvas(self, width=self.CANVAS_WIDTH, height=self.CANVAS_HEIGHT, bg=self._canvas_color.get())
-		self._canvas.place(relx=0.03, rely=0.052)
+		self._canvas = tk.Canvas(self, bg=self._canvas_color.get())
+		self._canvas.place(relx=0.03, rely=0.052, relwidth=0.72, relheight=0.83)
+		self._canvas.bind("<Configure>", self.__resized)
 
 	def __create_zoom_slider(self):
 		ttk.Label(self, text="Zoom:", foreground="#ffffff", background="#131113").place(relx=self.COMMON_X, rely=0.052, relheight=0.035, relwidth=0.2, anchor="ne")
@@ -173,6 +180,21 @@ class GUI(tk.Tk):
 				self._line_btn['bg']  = col[1]
 		
 		self.__changed()
+
+	def __get_canvas_shape(self):
+		"""returns the shape of the canvas holding the visualized frame"""
+		self.update()
+		return self._canvas.winfo_width(), self._canvas.winfo_height()
+
+	def __resized(self, *args):
+		'''Callback to the window resize events'''
+		w, h = self.__get_canvas_shape()
+		# Canvas' size changed, thus we update the object position accordingly
+		if self._canvas_w != w or self._canvas_h != h:
+			self._geometry_handler.update_position((w-self._canvas_w)//2, (h-self._canvas_h)//2)
+			self._canvas_w = w
+			self._canvas_h = h
+			self.__changed()
 
 	def __changed(self, *args):
 		self._changed = True
