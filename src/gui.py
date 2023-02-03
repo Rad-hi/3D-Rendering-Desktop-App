@@ -1,5 +1,6 @@
 import obj_files_handler as obj_files_handler 
 from geometry import Geometry
+from timer import time_me
 
 import math
 import tkinter as tk
@@ -13,8 +14,8 @@ MIN_HEIGHT = 630
 
 class GUI(tk.Tk):
 	''''''
-	CANVAS_WIDTH = 840
-	CANVAS_HEIGHT = 525
+	CANVAS_WIDTH = 1000
+	CANVAS_HEIGHT = 570
 	CANVAS_COLOR = 'white'
 	COMMON_X = 0.98	# Many graphical elements share the same relative X position
 	MOVING_STEP = 10
@@ -64,7 +65,7 @@ class GUI(tk.Tk):
 		self._canvas_color = tk.StringVar()
 		self._canvas_color.set("#FFFFFF")
 		self._canvas = tk.Canvas(self, bg=self._canvas_color.get())
-		self._canvas.place(relx=0.01, rely=0.01, relwidth=0.85, relheight=0.9)
+		self._canvas.place(relx=0.01, rely=0.01, relwidth=self.CANVAS_WIDTH/MIN_WIDTH, relheight=self.CANVAS_HEIGHT/MIN_HEIGHT)
 		# Catch the canvas resize event
 		self._canvas.bind("<Configure>", self.__resized)
 
@@ -74,7 +75,7 @@ class GUI(tk.Tk):
 
 	def __create_zoom_slider(self):
 		ttk.Label(self, text="Zoom:").place(relx=self.COMMON_X, rely=0.052, relheight=0.035, relwidth=0.1, anchor="ne")
-		self._zoom_slider = ttk.Scale(self, from_=2000, to=0.01, orient="horizontal", command=self.__changed)
+		self._zoom_slider = ttk.Scale(self, from_=1000.0, to=1/1000.0, orient="horizontal", command=self.__changed)
 		self._zoom_slider.set(self._geometry_handler.zoom)
 		self._zoom_slider.place(relx=self.COMMON_X, rely=0.088, relheight=0.04, relwidth=0.1, anchor="ne")
 
@@ -181,11 +182,11 @@ class GUI(tk.Tk):
 
 	def __mousewheel_scroll_in_canvas_up_event(self, *args):
 		'''callback to the scrolling up in canvas event'''
-		self._zoom_slider.set(self._zoom_slider.get()-10)
+		self._zoom_slider.set(self._zoom_slider.get()-0.5)
 
 	def __mousewheel_scroll_in_canvas_down_event(self, *args):
 		'''callback to the scrolling down in canvas event'''
-		self._zoom_slider.set(self._zoom_slider.get()+10)
+		self._zoom_slider.set(self._zoom_slider.get()+0.5)
 
 
 	def __get_canvas_shape(self):
@@ -313,6 +314,7 @@ class GUI(tk.Tk):
 
 			self._canvas.create_polygon(to_draw, outline=self._line_color_holder, fill=self._fill_color_holder)
 	
+	@time_me
 	def __draw_object(self):
 		'''Draw the object on the canvas'''
 		projected_points = self._geometry_handler.transform_object()

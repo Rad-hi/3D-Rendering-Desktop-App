@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
-
 import re
+
+import numpy as np
 
 def extract_data(file):
     """
@@ -14,9 +15,8 @@ def extract_data(file):
     @ret  : faces (the list containing the vertexes' indexes)
     """
 
-    verticies = {}
+    verticies = np.empty((1, 3))
     faces = []
-    v = 1 # First vertex (one indexed)
 
     # Read more about how waveform (.obj) files are structured to understand
     # how this code exactly works, but shortly:
@@ -28,8 +28,8 @@ def extract_data(file):
 
     for line in file.readlines():
         if line[0:2] == "v ":
-            verticies[v] = [[float(x)] for x in re.findall("[-+]?[.]?[\d]+(?:,\d\d\d)*[\.]?\d*(?:[eE][-+]?\d+)?", line)]
-            v += 1
+            pt = np.array([[float(x) for x in re.findall("[-+]?[.]?[\d]+(?:,\d\d\d)*[\.]?\d*(?:[eE][-+]?\d+)?", line)]])
+            verticies = np.concatenate([verticies, pt])
         elif line[0:2] == "f ":
             faces.append([int(vertex.split("/")[0]) for vertex in line[2:-2].split(' ')])
     return verticies, faces

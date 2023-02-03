@@ -1,22 +1,14 @@
+from timer import time_me
+
 import math
 import numpy as np
-import time
 
 import numba
-
-def time_me(f):
-	'''Decorator function to time functions' runtime in ms'''
-	def wrapper(*args, **kwargs):
-		start = time.time()
-		res = f(*args, **kwargs)
-		print(f'function: {f.__name__} took {(time.time()-start)*1000:.4f}ms')
-		return res
-	return wrapper
 
 @numba.njit(nogil=True, cache=True, fastmath=True)
 def matmul(A: np.ndarray, B: np.ndarray) -> np.ndarray:
 	'''
-	@brief: Numba accelerateable matmul (numpy's matmul isn't supported by numba)
+	@brief: Matrix multiplication from scratch
 	@param A: First matrix 
 	@param B: Second matrix
 	@Note: A, and B must be multiplicable matrices; that must have a common dimension
@@ -30,6 +22,60 @@ def matmul(A: np.ndarray, B: np.ndarray) -> np.ndarray:
 				C[i, j] += A[i, k] * B[k, j]
 	return C
 
+@numba.njit(nogil=True, cache=True)
+def max_3d_array(arr: np.ndarray, axis: int) -> float:
+	'''
+	Find the maximum in a miltidimensional array, in the provided axis
+	'''
+	max_ = -np.inf
+	for i in arr:
+		if i[axis] >= max_: 
+			max_ = i[axis] 
+	return max_
+
+@numba.njit(nogil=True, cache=True)
+def min_3d_array(arr: np.ndarray, axis: int) -> float:
+	'''
+	Find the minimum in a miltidimensional array, in the provided axis
+	'''
+	min_ = np.inf
+	for i in arr:
+		if i[axis] <= min_: 
+			min_ = i[axis] 
+	return min_
+
+@numba.njit(nogil=True, cache=True, fastmath=True)
+def normalize_3d_array(arr: np.ndarray, 
+					   range: 'tuple(float, float)' = (-1, 1),
+					   axis: int = 2
+) -> np.ndarray:
+	'''
+	@brief: Normalize an array values within a range based on a specified axis
+	@param arr: The array to be normalized
+	@param range: Normalized values range (min, max)
+	@param axis: the axis to normalize based on
+	@return arr: The normalized array
+	'''
+	mnx = min_3d_array(arr, 0)
+	mxx = max_3d_array(arr, 0)
+	mnz = min_3d_array(arr, 2)
+	mxz = max_3d_array(arr, 2)
+	mny = min_3d_array(arr, 1)
+	mxy = max_3d_array(arr, 1)
+
+	if axis == 0:
+		diff = mxx - mnx
+	elif axis == 1:
+		diff = mxy - mny
+	else:
+		diff = mxz - mnz
+	
+	for pt in arr:
+		pt[0] = (((pt[0]-mnx)*(range[1]-range[0]))/diff) + range[0]
+		pt[1] = (((pt[1]-mny)*(range[1]-range[0]))/diff) + range[0]
+		pt[2] = (((pt[2]-mnz)*(range[1]-range[0]))/diff) + range[0]	
+	return arr
+
 class Geometry:
 	'''
 	Geometry handling class (linear algebra)
@@ -37,21 +83,18 @@ class Geometry:
 	def __init__(self, canvas_width: int, canvas_height: int) -> None:
 		'''
 		'''
-		self.CANVAS_WIDTH = canvas_width
-		self.CANVAS_HEIGHT = canvas_height
-		self.OBJECT_SCALE = 2500 # Maybe make this dynamic depending on the object size
-		
-		self._obj_position = np.array((canvas_width//2, canvas_height - 20))
-		self._zoom = 1000
-		self._angle_x = 0
-		self._angle_y = 0
-		self._angle_z = 0
-		self._faces = []
-		self._verticies = {}
+		self.OBJECT_SCALE = 1000 # Maybe make this dynamic depending on the object size
+		self._obj_position = np.array((canvas_width//2, canvas_height//2))
+		self._zoom = 50.0
+		self._angle_x = 0.0
+		self._angle_y = 0.0
+		self._angle_z = 0.0
+		self._faces = None
+		self._verticies = None
 
 	def upload_object(self, verts, faces) -> None:
 		'''Uploads the verticies and faces to manipulate to the geometry handler'''
-		self._verticies = verts
+		self._verticies = normalize_3d_array(verts)
 		self._faces = faces
 
 	def update_position(self, x: int, y: int) -> None:
@@ -64,8 +107,8 @@ class Geometry:
 		'''Retur the points of the object transformed according to the current position'''
 		rot_x, rot_y, rot_z = self.__calculate_rot_matrix()
 		projected_points = {}
-		for idx, pt in self._verticies.items():
-			x, y = self.__transform_point(np.array(pt), rot_x, rot_y, rot_z, self._zoom, self._obj_position, self.OBJECT_SCALE)
+		for idx, pt in enumerate(self._verticies):
+			x, y = self.__transform_point(pt, rot_x, rot_y, rot_z, self._zoom, self._obj_position, self.OBJECT_SCALE)
 			projected_points[idx] = [x, y]
 		return projected_points
 
@@ -115,7 +158,7 @@ class Geometry:
 		@return transformed point: 2D tranformed projection of the 3D point
 		'''
 		# Rotate point on the Y, X, and Z axis respectively
-		rotated_2d = matmul(rotation_y, point)
+		rotated_2d = matmul(rotation_y, point.reshape((3, 1)))
 		rotated_2d = matmul(rotation_x, rotated_2d)
 		rotated_2d = matmul(rotation_z, rotated_2d)
 
