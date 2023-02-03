@@ -13,12 +13,12 @@ MIN_HEIGHT = 630
 
 class GUI(tk.Tk):
 	''''''
-	BACKGROUND_COLOR = '#131313'
 	CANVAS_WIDTH = 840
 	CANVAS_HEIGHT = 525
 	CANVAS_COLOR = 'white'
-	COMMON_X = 0.97	# Many graphical elements share the same relative X position
+	COMMON_X = 0.98	# Many graphical elements share the same relative X position
 	MOVING_STEP = 10
+	
 	POINT_SIZE = 1 
 	POINT_COLOR = '#131313'
 
@@ -26,12 +26,13 @@ class GUI(tk.Tk):
 		''''''
 		super().__init__()
 		# Set the theme to be dark (there must be an initialized app)
-		#sv_ttk.set_theme("dark")
+		sv_ttk.set_theme("dark")
 		
 		self._file_exists = False # A flag for whether the file has been loaded or not
 		self._changed = True # A flag used to only redraw the object when a change occured
 		self._geometry_handler = Geometry(self.CANVAS_WIDTH, self.CANVAS_HEIGHT)
 		
+		# Initial canvas ratios
 		self._canvas_w = int((self.CANVAS_WIDTH/MIN_WIDTH)*MIN_WIDTH)
 		self._canvas_h = int((self.CANVAS_HEIGHT/MIN_HEIGHT)*MIN_HEIGHT)
 		
@@ -45,19 +46,10 @@ class GUI(tk.Tk):
 	def __initialise_window(self, title, min_size):
 		self.title(title)
 		self.minsize(*min_size)
-		self['bg'] = self.BACKGROUND_COLOR
-
+		
 	def __create_widgets(self):
 		self.__create_canvas()
 		self.__create_zoom_slider()
-
-		ttk.Separator(self, orient = "horizontal").place(
-			relx=self.COMMON_X, 
-			rely=0.160, 
-			relwidth=0.2, 
-			anchor="ne"
-		)
-
 		self.__create_x_rot_slider()
 		self.__create_y_rot_slider()
 		self.__create_z_rot_slider()
@@ -72,83 +64,89 @@ class GUI(tk.Tk):
 		self._canvas_color = tk.StringVar()
 		self._canvas_color.set("#FFFFFF")
 		self._canvas = tk.Canvas(self, bg=self._canvas_color.get())
-		self._canvas.place(relx=0.03, rely=0.052, relwidth=0.72, relheight=0.83)
+		self._canvas.place(relx=0.01, rely=0.01, relwidth=0.85, relheight=0.9)
+		# Catch the canvas resize event
 		self._canvas.bind("<Configure>", self.__resized)
 
+		# Bind the scrolling on canvas event to zoom slider (Button-4/5 on linux)
+		self._canvas.bind('<Button-4>', self.__mousewheel_scroll_in_canvas_up_event)
+		self._canvas.bind('<Button-5>', self.__mousewheel_scroll_in_canvas_down_event)
+
 	def __create_zoom_slider(self):
-		ttk.Label(self, text="Zoom:", foreground="#ffffff", background="#131113").place(relx=self.COMMON_X, rely=0.052, relheight=0.035, relwidth=0.2, anchor="ne")
-		self.zoom_slider = ttk.Scale(self, from_=2000, to=2, orient="horizontal", command=self.__changed)
-		self.zoom_slider.set(self._geometry_handler.zoom)
-		self.zoom_slider.place(relx=self.COMMON_X, rely=0.088, relheight=0.04, relwidth=0.2, anchor="ne")
+		ttk.Label(self, text="Zoom:").place(relx=self.COMMON_X, rely=0.052, relheight=0.035, relwidth=0.1, anchor="ne")
+		self._zoom_slider = ttk.Scale(self, from_=2000, to=0.01, orient="horizontal", command=self.__changed)
+		self._zoom_slider.set(self._geometry_handler.zoom)
+		self._zoom_slider.place(relx=self.COMMON_X, rely=0.088, relheight=0.04, relwidth=0.1, anchor="ne")
 
 	def __create_x_rot_slider(self):
-		ttk.Label(self, text="X Rotation:", foreground="#ffffff", background="#131113").place(relx=self.COMMON_X, rely=0.184, relheight=0.035, relwidth=0.2, anchor="ne")
+		ttk.Label(self, text="X Rotation:").place(relx=self.COMMON_X, rely=0.123, relheight=0.035, relwidth=0.1, anchor="ne")
 		self.x_rotation_slider = ttk.Scale(self, from_=-math.pi, to=math.pi, orient="horizontal", command=self.__changed)
 		self.x_rotation_slider.set(0)
-		self.x_rotation_slider.place(relx=self.COMMON_X, rely=0.220, relheight=0.04, relwidth=0.2, anchor="ne")
+		self.x_rotation_slider.place(relx=self.COMMON_X, rely=0.163, relheight=0.04, relwidth=0.1, anchor="ne")
 
 	def __create_y_rot_slider(self):
-		ttk.Label(self, text="Y Rotation:", foreground="#ffffff", background="#131113").place(relx=self.COMMON_X, rely=0.294, relheight=0.035, relwidth=0.2, anchor="ne")
+		ttk.Label(self, text="Y Rotation:").place(relx=self.COMMON_X, rely=0.204, relheight=0.035, relwidth=0.1, anchor="ne")
 		self.y_rotation_slider = ttk.Scale(self, from_=-math.pi, to=math.pi, orient="horizontal", command=self.__changed)
 		self.y_rotation_slider.set(0)
-		self.y_rotation_slider.place(relx=self.COMMON_X, rely=0.330, relheight=0.04, relwidth=0.2, anchor="ne")
+		self.y_rotation_slider.place(relx=self.COMMON_X, rely=0.244, relheight=0.04, relwidth=0.1, anchor="ne")
 
 	def __create_z_rot_slider(self):
-		ttk.Label(self, text="Z Rotation:", foreground="#ffffff", background="#131113").place(relx=self.COMMON_X, rely=0.394, relheight=0.035, relwidth=0.2, anchor="ne")
+		ttk.Label(self, text="Z Rotation:").place(relx=self.COMMON_X, rely=0.285, relheight=0.035, relwidth=0.1, anchor="ne")
 		self.z_rotation_slider = ttk.Scale(self, from_=-math.pi, to=math.pi, orient="horizontal", command=self.__changed)
 		self.z_rotation_slider.set(0)
-		self.z_rotation_slider.place(relx=self.COMMON_X, rely=0.430, relheight=0.04, relwidth=0.2, anchor="ne")
+		self.z_rotation_slider.place(relx=self.COMMON_X, rely=0.325, relheight=0.04, relwidth=0.1, anchor="ne")
 
 	def __create_reset_rot_button(self):
-		ttk.Button(self, text="Reset rotation", command=self.__reset_rotation).place(relx=self.COMMON_X, rely=0.505, relheight=0.05, relwidth=0.095, anchor="ne")
+		ttk.Button(self, text="Reset rot", command=self.__reset_rotation).place(relx=self.COMMON_X, rely=0.38, relheight=0.05, relwidth=0.095, anchor="ne")
 
 	def __create_import_file_button(self):
-		ttk.Button(self, text="Take a screenshot", command=self.__take_screenshot).place(relx=self.COMMON_X, rely=0.895, relheight=0.05, relwidth=0.2, anchor="ne")
+		ttk.Button(self, text="Screenshot", command=self.__take_screenshot).place(relx=self.COMMON_X, rely=0.895, relheight=0.05, relwidth=0.1, anchor="ne")
 
 	def __create_screenshot_button(self):
-		self.FILE_NAME = tk.StringVar()
-		ttk.Label(self, textvariable=self.FILE_NAME, foreground="#ffffff", background="#131113").place(relx=0.86, rely=0.817, relheight=0.035, relwidth=0.09, anchor="ne")
-		ttk.Button(self, text="Import file", command=self.__read_file).place(relx=self.COMMON_X, rely=0.815, relheight=0.05, relwidth=0.095, anchor="ne")
+		self._file_name = tk.StringVar()
+		ttk.Label(self, textvariable=self._file_name, foreground="#AAAAAA").place(relx=0.01, rely=0.96, relheight=0.035, relwidth=0.4)
+		ttk.Button(self, text="Import file", command=self.__read_file).place(relx=self.COMMON_X, rely=0.815, relheight=0.05, relwidth=0.1, anchor="ne")
 
 	def __create_up_down_left_right_buttons(self):
 		# Common values for placements of the buttons
-		COMM_X = 0.89
-		COMM_Y = 0.660
-		COMM_RELATIVE_HIEGHT = 0.05
+		COMM_X = 0.945
+		COMM_Y = 0.6
+		COMM_RELATIVE_HIEGHT = 0.04
 		COMM_RELATIVE_WIDTH  = 0.03
-		ttk.Button(self, text="U", command=self.__move_up).place(relx=COMM_X, rely=0.595, relheight=COMM_RELATIVE_HIEGHT, relwidth=COMM_RELATIVE_WIDTH, anchor="ne")
-		ttk.Button(self, text="D", command=self.__move_down).place(relx=COMM_X, rely=0.725, relheight=COMM_RELATIVE_HIEGHT, relwidth=COMM_RELATIVE_WIDTH, anchor="ne")
-		ttk.Button(self, text="L", command=self.__move_left).place(relx=0.84, rely=COMM_Y, relheight=COMM_RELATIVE_HIEGHT, relwidth=COMM_RELATIVE_WIDTH, anchor="ne")
-		ttk.Button(self, text="R", command=self.__move_right).place(relx=0.94, rely=COMM_Y, relheight=COMM_RELATIVE_HIEGHT, relwidth=COMM_RELATIVE_WIDTH, anchor="ne")
+		ttk.Button(self, text="U", command=self.__move_up).place(relx=COMM_X, rely=COMM_Y-0.04, relheight=COMM_RELATIVE_HIEGHT, relwidth=COMM_RELATIVE_WIDTH, anchor="ne")
+		ttk.Button(self, text="D", command=self.__move_down).place(relx=COMM_X, rely=COMM_Y+0.04, relheight=COMM_RELATIVE_HIEGHT, relwidth=COMM_RELATIVE_WIDTH, anchor="ne")
+		ttk.Button(self, text="L", command=self.__move_left).place(relx=COMM_X-0.035, rely=COMM_Y, relheight=COMM_RELATIVE_HIEGHT, relwidth=COMM_RELATIVE_WIDTH, anchor="ne")
+		ttk.Button(self, text="R", command=self.__move_right).place(relx=COMM_X+0.035, rely=COMM_Y, relheight=COMM_RELATIVE_HIEGHT, relwidth=COMM_RELATIVE_WIDTH, anchor="ne")
 
 	def __create_color_pickers(self):
 		'''Create the color pickers to change line/canvas/fill colors'''
-		COMM_Y = 0.92
+		COMM_Y = 0.935
 
 		# FILL
 		self.fill_color = tk.StringVar()
 		self.fill_color.set("#000000")
-		ttk.Label(self, text="Fill color:", foreground="#ffffff", background="#131113").place(relx=0.08, rely=COMM_Y - 0.01, relheight=0.035, anchor="ne")
+		ttk.Label(self, text="Fill color:").place(relx=0.01, rely=COMM_Y-0.01, relheight=0.035)
 		self._fill_btn = tk.Button(self, text="", command=self.__pick_color_fill, relief='flat')
-		self._fill_btn.place(relx=0.095, rely=COMM_Y, relheight=0.015, relwidth=0.05)
+		self._fill_btn.place(relx=0.08, rely=COMM_Y, relheight=0.015, relwidth=0.05)
 		self._fill_btn['bg'] = self.fill_color.get()
 
 		# LINE
 		self.line_color = tk.StringVar()
 		self.line_color.set("#0000FF")
-		ttk.Label(self, text="Line color:", foreground="#ffffff", background="#131113").place(relx=0.24, rely=COMM_Y - 0.01, relheight=0.035, anchor="ne")
+		ttk.Label(self, text="Line color:").place(relx=0.2, rely=COMM_Y-0.01, relheight=0.035, anchor="ne")
 		self._line_btn = tk.Button(self, text="", command=self.__pick_color_line, relief='flat')
-		self._line_btn.place(relx=0.255, rely=COMM_Y, relheight=0.015, relwidth=0.05)
+		self._line_btn.place(relx=0.21, rely=COMM_Y, relheight=0.015, relwidth=0.05)
 		self._line_btn['bg'] = self.line_color.get()
 
 		# CANVAS' BACKGROUND
-		ttk.Label(self, text="Canvas color:", foreground="#ffffff", background="#131113").place(relx=0.42, rely=COMM_Y - 0.01, relheight=0.035, anchor="ne")
+		ttk.Label(self, text="Canvas color:").place(relx=0.35, rely=COMM_Y - 0.01, relheight=0.035, anchor="ne")
 		self._canvas_btn = tk.Button(self, text="", command=self.__pick_color_canvas, relief='flat')
-		self._canvas_btn.place(relx=0.435, rely=COMM_Y, relheight=0.015, relwidth=0.05)
+		self._canvas_btn.place(relx=0.36, rely=COMM_Y, relheight=0.015, relwidth=0.05)
+		self._canvas_btn['bg'] = self._canvas_color.get()
 
 	def __create_fill_check(self):
 		self._check_no_fill = tk.IntVar()
-		ttk.Checkbutton(self, text="No fill", variable=self._check_no_fill, command=self.__changed, onvalue=True, offvalue=False).place(relx=0.704, rely=0.91, relheight=0.035)
+		ttk.Checkbutton(self, text="No fill", variable=self._check_no_fill, command=self.__changed, onvalue=True, offvalue=False).place(relx=0.80, rely=0.92)
 
 	def __pick_color_fill(self):
 		self.__pick_color("f")
@@ -180,6 +178,15 @@ class GUI(tk.Tk):
 				self._line_btn['bg']  = col[1]
 		
 		self.__changed()
+
+	def __mousewheel_scroll_in_canvas_up_event(self, *args):
+		'''callback to the scrolling up in canvas event'''
+		self._zoom_slider.set(self._zoom_slider.get()-10)
+
+	def __mousewheel_scroll_in_canvas_down_event(self, *args):
+		'''callback to the scrolling down in canvas event'''
+		self._zoom_slider.set(self._zoom_slider.get()+10)
+
 
 	def __get_canvas_shape(self):
 		"""returns the shape of the canvas holding the visualized frame"""
@@ -232,7 +239,7 @@ class GUI(tk.Tk):
 			messagebox.showinfo(message="Incompatible file format", title="ERROR")
 
 		elif len(file_path):
-			self.FILE_NAME.set(file_path.split('/')[-1])
+			self._file_name.set(file_path.split('/')[-1])
 			self.__reset_rotation()
 			with open(file_path) as file:
 				self._geometry_handler.upload_object(*obj_files_handler.extract_data(file))
@@ -265,7 +272,7 @@ class GUI(tk.Tk):
 			self._changed = False
 
 	def __set_zoom(self):
-		self._geometry_handler.set_zoom(self.zoom_slider.get())
+		self._geometry_handler.set_zoom(self._zoom_slider.get())
 
 	def __set_rotations(self):
 		self._geometry_handler.reset_rotation(x=self.x_rotation_slider.get(), 
