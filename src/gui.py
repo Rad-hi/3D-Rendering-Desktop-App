@@ -75,24 +75,30 @@ class GUI(tk.Tk):
 
 	def __create_zoom_slider(self):
 		ttk.Label(self, text="Zoom:").place(relx=self.COMMON_X, rely=0.052, relheight=0.035, relwidth=0.1, anchor="ne")
-		self._zoom_slider = ttk.Scale(self, from_=1000.0, to=1/1000.0, orient="horizontal", command=self.__changed)
+		self._zoom_slider = ttk.Scale(self, from_=1000.0, to=1.1, orient="horizontal", command=self.__changed)
 		self._zoom_slider.set(self._geometry_handler.zoom)
 		self._zoom_slider.place(relx=self.COMMON_X, rely=0.088, relheight=0.04, relwidth=0.1, anchor="ne")
 
 	def __create_x_rot_slider(self):
-		ttk.Label(self, text="X Rotation:").place(relx=self.COMMON_X, rely=0.123, relheight=0.035, relwidth=0.1, anchor="ne")
+		self._check_x_continuos = tk.BooleanVar()
+		ttk.Checkbutton(self, text="", variable=self._check_x_continuos, command=self.__continuous_x, onvalue=True, offvalue=False).place(relx=self.COMMON_X-0.1, rely=0.121)
+		ttk.Label(self, text="X Rotation:").place(relx=self.COMMON_X, rely=0.123, relheight=0.035, relwidth=0.075, anchor="ne")
 		self.x_rotation_slider = ttk.Scale(self, from_=-math.pi, to=math.pi, orient="horizontal", command=self.__changed)
 		self.x_rotation_slider.set(0)
 		self.x_rotation_slider.place(relx=self.COMMON_X, rely=0.163, relheight=0.04, relwidth=0.1, anchor="ne")
 
 	def __create_y_rot_slider(self):
-		ttk.Label(self, text="Y Rotation:").place(relx=self.COMMON_X, rely=0.204, relheight=0.035, relwidth=0.1, anchor="ne")
+		self._check_y_continuos = tk.BooleanVar()
+		ttk.Checkbutton(self, text="", variable=self._check_y_continuos, command=self.__continuous_y, onvalue=True, offvalue=False).place(relx=self.COMMON_X-0.1, rely=0.202)
+		ttk.Label(self, text="Y Rotation:").place(relx=self.COMMON_X, rely=0.204, relheight=0.035, relwidth=0.075, anchor="ne")
 		self.y_rotation_slider = ttk.Scale(self, from_=-math.pi, to=math.pi, orient="horizontal", command=self.__changed)
 		self.y_rotation_slider.set(0)
 		self.y_rotation_slider.place(relx=self.COMMON_X, rely=0.244, relheight=0.04, relwidth=0.1, anchor="ne")
 
 	def __create_z_rot_slider(self):
-		ttk.Label(self, text="Z Rotation:").place(relx=self.COMMON_X, rely=0.285, relheight=0.035, relwidth=0.1, anchor="ne")
+		self._check_z_continuos = tk.BooleanVar()
+		ttk.Checkbutton(self, text="", variable=self._check_z_continuos, command=self.__continuous_z, onvalue=True, offvalue=False).place(relx=self.COMMON_X-0.1, rely=0.283)
+		ttk.Label(self, text="Z Rotation:").place(relx=self.COMMON_X, rely=0.285, relheight=0.035, relwidth=0.075, anchor="ne")
 		self.z_rotation_slider = ttk.Scale(self, from_=-math.pi, to=math.pi, orient="horizontal", command=self.__changed)
 		self.z_rotation_slider.set(0)
 		self.z_rotation_slider.place(relx=self.COMMON_X, rely=0.325, relheight=0.04, relwidth=0.1, anchor="ne")
@@ -188,6 +194,23 @@ class GUI(tk.Tk):
 		'''callback to the scrolling down in canvas event'''
 		self._zoom_slider.set(self._zoom_slider.get()+0.5)
 
+	def __continuous_x(self, *args):
+		'''Callback to change event in checkbutton for continuous X rotation'''
+		if not self._check_x_continuos.get():
+			x, _, _ = self._geometry_handler.orientation
+			self.x_rotation_slider.set(x%math.pi)
+
+	def __continuous_y(self, *args):
+		'''Callback to change event in checkbutton for continuous Y rotation'''
+		if not self._check_y_continuos.get():
+			_, y, _ = self._geometry_handler.orientation
+			self.y_rotation_slider.set(y%math.pi)
+
+	def __continuous_z(self, *args):
+		'''Callback to change event in checkbutton for continuous Z rotation'''
+		if not self._check_z_continuos.get():
+			_, _, z = self._geometry_handler.orientation
+			self.z_rotation_slider.set(z%math.pi)
 
 	def __get_canvas_shape(self):
 		"""returns the shape of the canvas holding the visualized frame"""
@@ -262,10 +285,21 @@ class GUI(tk.Tk):
 		self._geometry_handler.update_position(self.MOVING_STEP, 0)
 		self.__changed()
 
-	def draw(self):
+#	@time_me
+	def render(self):
+		'''Render the object on the screen'''
+		# We need the continuous rotation to be enabled on one axis, and for the step to be non-zero
+		continuous = (
+			(self.x_rotation_slider.get() and self._check_x_continuos.get()) 
+		 or (self.y_rotation_slider.get() and self._check_y_continuos.get()) 
+		 or (self.z_rotation_slider.get() and self._check_z_continuos.get())
+		)
+
+		if continuous: self.__step_rotations()
 		self.__set_rotations()
 		self.__set_zoom()
-		if(self._file_exists and self._changed):
+
+		if self._file_exists and (self._changed or continuous):
 			#Delete all the previous points and lines in order to draw new ones
 			self._canvas.delete("all")
 			self.__update_colors()
@@ -275,10 +309,24 @@ class GUI(tk.Tk):
 	def __set_zoom(self):
 		self._geometry_handler.set_zoom(self._zoom_slider.get())
 
+	def __step_rotations(self):
+		'''Increment the rotation angle'''
+		self._geometry_handler.step_rotation(
+			(self.x_rotation_slider.get()/100)*self._check_x_continuos.get(),
+			(self.y_rotation_slider.get()/100)*self._check_y_continuos.get(),
+			(self.z_rotation_slider.get()/100)*self._check_z_continuos.get(),
+		)
+	
 	def __set_rotations(self):
-		self._geometry_handler.reset_rotation(x=self.x_rotation_slider.get(), 
-											  y=self.y_rotation_slider.get(), 
-											  z=self.z_rotation_slider.get()
+		'''Set the required rotations for the geometry handler'''
+		x, y, z = self._geometry_handler.orientation
+		x_cont = self._check_x_continuos.get()
+		y_cont = self._check_y_continuos.get()
+		z_cont = self._check_z_continuos.get()
+		self._geometry_handler.reset_rotation(
+			x=self.x_rotation_slider.get()*(not x_cont) + x*x_cont, 
+			y=self.y_rotation_slider.get()*(not y_cont) + y*y_cont, 
+			z=self.z_rotation_slider.get()*(not z_cont) + z*z_cont
 		)
 
 	def __change_fill_color(self, color: str, no_fill: bool = False):
@@ -296,6 +344,7 @@ class GUI(tk.Tk):
 						   		 width=self.POINT_SIZE,
 						   		 fill=self.POINT_COLOR)
 
+	@time_me
 	def __draw_faces(self, points: dict) -> None:
 		''''''
 		for face in self._geometry_handler.faces:
@@ -309,12 +358,11 @@ class GUI(tk.Tk):
 			#	   point[1] > self.CANVAS_HEIGHT
 			#	):
 			#		continue # Don't draw points that are out of the screen
-				#This is the slowest part of the GUI
-				#self.__draw_point(point)
+			#	# This is the slowest part of the GUI
+			#	self.__draw_point(point)
 
 			self._canvas.create_polygon(to_draw, outline=self._line_color_holder, fill=self._fill_color_holder)
 	
-	@time_me
 	def __draw_object(self):
 		'''Draw the object on the canvas'''
 		projected_points = self._geometry_handler.transform_object()

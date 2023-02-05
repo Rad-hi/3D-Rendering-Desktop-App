@@ -14,7 +14,7 @@ class main_:
         self._gui = GUI(*args, **kwargs)
 
     def _update_display(self):
-        self._gui.draw()
+        self._gui.render()
         self._gui.after(1, self._update_display)
 
 if __name__ == '__main__':

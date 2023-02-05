@@ -94,7 +94,7 @@ class Geometry:
 
 	def upload_object(self, verts, faces) -> None:
 		'''Uploads the verticies and faces to manipulate to the geometry handler'''
-		self._verticies = normalize_3d_array(verts)
+		self._verticies = normalize_3d_array(verts, axis=0)
 		self._faces = faces
 
 	def update_position(self, x: int, y: int) -> None:
@@ -122,9 +122,24 @@ class Geometry:
 		'''Get the current zoom value'''
 		return self._zoom
 
+	@property
+	def orientation(self) -> 'tuple(float, float, float)':
+		'''Returns the object's current angles'''
+		return self._angle_x, self._angle_y, self._angle_z
+
 	def set_zoom(self, zoom: int) -> None:
 		'''Set the new zoom value'''
 		self._zoom = zoom
+
+	def step_rotation(self, 
+					  x: float = 0.0,
+					  y: float = 0.0,
+					  z: float = 0.0
+	) -> None:
+		'''Reset the rotation to a specific position, if provided, else to 0'''
+		self._angle_x += x
+		self._angle_y += y
+		self._angle_z += z
 
 	def reset_rotation(self, 
 					   x: float = None,
