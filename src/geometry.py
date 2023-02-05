@@ -1,8 +1,6 @@
 from timer import time_me
-
 import math
 import numpy as np
-
 import numba
 
 @numba.njit(nogil=True, cache=True, fastmath=True)
@@ -44,46 +42,15 @@ def min_3d_array(arr: np.ndarray, axis: int) -> float:
 			min_ = i[axis] 
 	return min_
 
-@numba.njit(nogil=True, cache=True, fastmath=True)
-def normalize_3d_array(arr: np.ndarray, 
-					   range: 'tuple(float, float)' = (-1, 1),
-					   axis: int = 2
-) -> np.ndarray:
-	'''
-	@brief: Normalize an array values within a range based on a specified axis
-	@param arr: The array to be normalized
-	@param range: Normalized values range (min, max)
-	@param axis: the axis to normalize based on
-	@return arr: The normalized array
-	'''
-	mnx = min_3d_array(arr, 0)
-	mxx = max_3d_array(arr, 0)
-	mnz = min_3d_array(arr, 2)
-	mxz = max_3d_array(arr, 2)
-	mny = min_3d_array(arr, 1)
-	mxy = max_3d_array(arr, 1)
-
-	if axis == 0:
-		diff = mxx - mnx
-	elif axis == 1:
-		diff = mxy - mny
-	else:
-		diff = mxz - mnz
-	
-	for pt in arr:
-		pt[0] = (((pt[0]-mnx)*(range[1]-range[0]))/diff) + range[0]
-		pt[1] = (((pt[1]-mny)*(range[1]-range[0]))/diff) + range[0]
-		pt[2] = (((pt[2]-mnz)*(range[1]-range[0]))/diff) + range[0]	
-	return arr
-
 class Geometry:
 	'''
 	Geometry handling class (linear algebra)
 	'''
+	OBJECT_SCALE = 2000 # Maybe make this dynamic depending on the object size
+	
 	def __init__(self, canvas_width: int, canvas_height: int) -> None:
 		'''
 		'''
-		self.OBJECT_SCALE = 1000 # Maybe make this dynamic depending on the object size
 		self._obj_position = np.array((canvas_width//2, canvas_height//2))
 		self._zoom = 50.0
 		self._angle_x = 0.0
@@ -92,9 +59,9 @@ class Geometry:
 		self._faces = None
 		self._verticies = None
 
-	def upload_object(self, verts, faces) -> None:
-		'''Uploads the verticies and faces to manipulate to the geometry handler'''
-		self._verticies = normalize_3d_array(verts, axis=0)
+	def upload_object(self, verts: np.ndarray, faces: list) -> None:
+		'''Uploads the verticies and faces to manipulate'''
+		self._verticies = self.__normalize_3d_array(verts, axis=0)
 		self._faces = faces
 
 	def update_position(self, x: int, y: int) -> None:
@@ -103,13 +70,13 @@ class Geometry:
 		self._obj_position[1] += y
 	
 	@time_me
-	def transform_object(self) -> dict:
-		'''Retur the points of the object transformed according to the current position'''
+	def transform_object(self) -> 'list(list(int, int))':
+		'''Retur the points of the object transformed according to the current pose'''
 		rot_x, rot_y, rot_z = self.__calculate_rot_matrix()
-		projected_points = {}
-		for idx, pt in enumerate(self._verticies):
+		projected_points = []
+		for pt in self._verticies:
 			x, y = self.__transform_point(pt, rot_x, rot_y, rot_z, self._zoom, self._obj_position, self.OBJECT_SCALE)
-			projected_points[idx] = [x, y]
+			projected_points.append([x, y])
 		return projected_points
 
 	@property
@@ -127,7 +94,7 @@ class Geometry:
 		'''Returns the object's current angles'''
 		return self._angle_x, self._angle_y, self._angle_z
 
-	def set_zoom(self, zoom: int) -> None:
+	def set_zoom(self, zoom: float) -> None:
 		'''Set the new zoom value'''
 		self._zoom = zoom
 
@@ -136,7 +103,7 @@ class Geometry:
 					  y: float = 0.0,
 					  z: float = 0.0
 	) -> None:
-		'''Reset the rotation to a specific position, if provided, else to 0'''
+		'''Increment the orientation of the object on its axis'''
 		self._angle_x += x
 		self._angle_y += y
 		self._angle_z += z
@@ -150,6 +117,39 @@ class Geometry:
 		self._angle_x = 0 if x is None else x
 		self._angle_y = 0 if y is None else y
 		self._angle_z = 0 if z is None else z
+
+	@staticmethod
+	@numba.njit(nogil=True, cache=True, fastmath=True)
+	def __normalize_3d_array(arr: np.ndarray, 
+							 range: 'tuple(float, float)' = (-1, 1),
+							 axis: int = 2
+	) -> np.ndarray:
+		'''
+		@brief: Normalize an array values within a range based on a specified axis
+		@param arr: The array to be normalized
+		@param range: Normalized values range (min, max)
+		@param axis: the axis to normalize based on
+		@return arr: The normalized array
+		'''
+		mnx = min_3d_array(arr, 0)
+		mxx = max_3d_array(arr, 0)
+		mnz = min_3d_array(arr, 2)
+		mxz = max_3d_array(arr, 2)
+		mny = min_3d_array(arr, 1)
+		mxy = max_3d_array(arr, 1)
+
+		if axis == 0:
+			diff = mxx - mnx
+		elif axis == 1:
+			diff = mxy - mny
+		else:
+			diff = mxz - mnz
+		
+		for pt in arr:
+			pt[0] = (((pt[0]-mnx)*(range[1]-range[0]))/diff) + range[0]
+			pt[1] = (((pt[1]-mny)*(range[1]-range[0]))/diff) + range[0]
+			pt[2] = (((pt[2]-mnz)*(range[1]-range[0]))/diff) + range[0]	
+		return arr
 
 	@staticmethod
 	@numba.njit(nogil=True, cache=True, fastmath=True)

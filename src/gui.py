@@ -196,6 +196,7 @@ class GUI(tk.Tk):
 
 	def __continuous_x(self, *args):
 		'''Callback to change event in checkbutton for continuous X rotation'''
+		# Catch the disable-continuous-rotation-on-x event and update the rotation slider accoring to the last position
 		if not self._check_x_continuos.get():
 			x, _, _ = self._geometry_handler.orientation
 			self.x_rotation_slider.set(x%math.pi)
@@ -220,14 +221,15 @@ class GUI(tk.Tk):
 	def __resized(self, *args):
 		'''Callback to the window resize events'''
 		w, h = self.__get_canvas_shape()
-		# Canvas' size changed, thus we update the object position accordingly
 		if self._canvas_w != w or self._canvas_h != h:
+			# Keep the object in the middle of the canvas
 			self._geometry_handler.update_position((w-self._canvas_w)//2, (h-self._canvas_h)//2)
 			self._canvas_w = w
 			self._canvas_h = h
 			self.__changed()
 
 	def __changed(self, *args):
+		'''Signal to the rendering function that something has changed in the object'''
 		self._changed = True
 
 	def __reset_rotation(self):
@@ -289,10 +291,9 @@ class GUI(tk.Tk):
 	def render(self):
 		'''Render the object on the screen'''
 		# We need the continuous rotation to be enabled on one axis, and for the step to be non-zero
-		continuous = (
-			(self.x_rotation_slider.get() and self._check_x_continuos.get()) 
-		 or (self.y_rotation_slider.get() and self._check_y_continuos.get()) 
-		 or (self.z_rotation_slider.get() and self._check_z_continuos.get())
+		continuous = ( (self.x_rotation_slider.get() and self._check_x_continuos.get()) 
+		 			or (self.y_rotation_slider.get() and self._check_y_continuos.get()) 
+		 			or (self.z_rotation_slider.get() and self._check_z_continuos.get())
 		)
 
 		if continuous: self.__step_rotations()
@@ -310,7 +311,7 @@ class GUI(tk.Tk):
 		self._geometry_handler.set_zoom(self._zoom_slider.get())
 
 	def __step_rotations(self):
-		'''Increment the rotation angle'''
+		'''Increment the rotation angle by 1% on the enables axis'''
 		self._geometry_handler.step_rotation(
 			(self.x_rotation_slider.get()/100)*self._check_x_continuos.get(),
 			(self.y_rotation_slider.get()/100)*self._check_y_continuos.get(),
