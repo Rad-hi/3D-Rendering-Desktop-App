@@ -10,7 +10,7 @@
 
 ## New version !
 
-This folder was changed as there was only 3 source files, now there exists **V1_SOURCE** and **V2_SOURCE** where the **V1** contains the original files (not recommended to use), and the **V2** contains the new version of the project that adapts an **OOP** approach and a cleaner code structure, as well as some enhancements along with some new features.
+This folder was changed as there was only 3 source files, now there exists **V1_SOURCE** ~and **V2_SOURCE**~ where the **V1** contains the original files (not recommended to use), ~and the **V2**~ the **src** contains the new version of the project that adapts an **OOP** approach and a cleaner code structure, as well as some enhancements along with some new features.
 
 **What's new?**
 
@@ -18,9 +18,10 @@ This folder was changed as there was only 3 source files, now there exists **V1_
 - The 3D model is only redrawn (rerendered) when there's a change 
 - Faces are now being drawn **completely** (no matter how many vetrecies)
 - Points that aren't in the screen are no longer rendered
-- Rotation isn't continous, instead it's a custom degree on each axis
+- Rotation ~isn't~ is either continous, ~instead~ or a custom degree on each axis
 - New controls for Line color, Filling color, canvas color
 - Filling could be turned ON and OFF
+- Scrolling inside the drawing canvas zooms in/out the object
 
 ---
 
@@ -32,11 +33,11 @@ Also it was a way for me to explore an interesting field for me which is graphic
 
 It's a desktop app that takes in waveform files (.OBJ) and visualizes its triangulated form ~(no filliing, no shading, no texturing! just triangles)~ 
 
-The **V2** (Legacy_versions/V2_SOURCE) of the project adds a filling option with control over the color of the filling as well as whether it's turned ON or OFF.
+~The **V2** (Legacy_versions/V2_SOURCE) of the project adds a filling option with control over the color of the filling as well as whether it's turned ON or OFF.~
 
 ### Key Words
 
-- Python: Numpy, Tkinter, re (regex), 3D graphics.
+- Python: Numpy, Tkinter, re (regex), 3D graphics, Numba.
 
 - Waveform files (.OBJ). 
 
@@ -66,6 +67,8 @@ You'll have to have these libraries along with Python in your PC ```pip3 install
 
 - Tkinter (if you're running Linux, you'll have to install it ```sudo apt-get install python3-tk``` , otherwise, it comes with Python when installed)
 
+- Numba
+
 - The 3 files provided in this repo located in the same folder.
 
 - pyscreenshot (Only if you're running Linux, otherwise, you can use ImageGrab from the PIL lib)
@@ -76,21 +79,14 @@ You'll have to have these libraries along with Python in your PC ```pip3 install
 
 - This interface will open:
 
-<img src="Screenshots/Interface_V2.png" width="960">
+<img src="Screenshots/new_gui.png" width="960">
 
 - You can load any .obj file you want, or you can choose from the files 
 provided in the /Objects folder.
-
 - After loading the 3D model, you can move it UP/DOWN/LEFT/RIGHT using the U/D/L/R buttons or using the arrow keys on your keyboard.
-
-- You can zoom in and out, or rotate the model in 3 axis.
-
+- You can zoom in and out (you can scroll insed the canvas to do this), or rotate the model in 3 axis.
 - You can take screenshots too with the "Take screenshot" button.
-
-**New in V2**
-
 - You can turn ON and OFF the filling.
-
 - You can change the canvas color, the lines color, and the filling color.
 
 ---
