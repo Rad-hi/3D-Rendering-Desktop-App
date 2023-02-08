@@ -1,9 +1,8 @@
 # Build a 3D rendering desktop app from scratch with Python
 
-<img src="Screenshots/GIF.gif" >
+<img src="Screenshots/v3.gif" >
 
 > [V1 Demo YouTube video](https://youtu.be/G0m2wwEppWA)
-
 > [V2 Code walkthrough YouTube video](https://youtu.be/Ca8nKtICYMk)
 
 ---
@@ -38,7 +37,6 @@ It's a desktop app that takes in waveform files (.OBJ) and visualizes its triang
 ### Key Words
 
 - Python: Numpy, Tkinter, re (regex), 3D graphics, Numba.
-
 - Waveform files (.OBJ). 
 
 ---
@@ -64,19 +62,15 @@ Or if you're not into reading, watch this [YouTube video](https://www.youtube.co
 You'll have to have these libraries along with Python in your PC ```pip3 install -r requirements.txt``` :
 
 - Numpy
-
 - Tkinter (if you're running Linux, you'll have to install it ```sudo apt-get install python3-tk``` , otherwise, it comes with Python when installed)
-
 - Numba
-
 - The 3 files provided in this repo located in the same folder.
-
 - pyscreenshot (Only if you're running Linux, otherwise, you can use ImageGrab from the PIL lib)
+- sv_ttk (for the theme)
 
 ### Manipulation
 
 - Run the main.py file
-
 - This interface will open:
 
 <img src="Screenshots/new_gui.png" width="960">
@@ -93,13 +87,9 @@ provided in the /Objects folder.
 
 ## References
 
-
 - Inspiration for this project: [Youtube Vid](https://www.youtube.com/watch?v=Scn96t7mwC4)
-
 - Some of my code was based on this work: [Youtube Vid](https://www.youtube.com/watch?v=sSQIwIx8uT4)
-
 - Best explanation of linear algebra ever: [Youtube Playlist](https://www.youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab)
-
 - Get free waveform files online: [Link](https://www.turbosquid.com/Search/3D-Models/free/obj)
 
 ---
