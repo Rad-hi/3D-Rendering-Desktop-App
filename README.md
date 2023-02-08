@@ -1,9 +1,8 @@
 # Build a 3D rendering desktop app from scratch with Python
 
-<img src="Screenshots/v3.gif" >
+<img src="Screenshots/v3.gif">
 
-> [V1 Demo YouTube video](https://youtu.be/G0m2wwEppWA)
-> [V2 Code walkthrough YouTube video](https://youtu.be/Ca8nKtICYMk)
+> [V1 Demo YouTube video](https://youtu.be/G0m2wwEppWA) | [V2 Code walkthrough YouTube video](https://youtu.be/Ca8nKtICYMk)
 
 ---
 
@@ -73,7 +72,7 @@ You'll have to have these libraries along with Python in your PC ```pip3 install
 - Run the main.py file
 - This interface will open:
 
-<img src="Screenshots/new_gui.png" width="960">
+<img src="Screenshots/v3.png" width="960">
 
 - You can load any .obj file you want, or you can choose from the files 
 provided in the /Objects folder.
