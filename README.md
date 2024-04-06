@@ -1,5 +1,17 @@
 # Build a 3D rendering desktop app from scratch with Python
 
+SorceForge page: https://sourceforge.net/projects/python-renderer-wireless-disp/
+
+Update by Northstrix:
+- Added the wireless display support
+- Added the touchpad zoom handling
+- Adjusted default theme
+
+
+<img src="Screenshots/3d renderer with wireless display support.gif">
+
+Used .obj file: https://free3d.com/3d-model/low_poly_tree-816203.html
+
 <img src="Screenshots/v3.gif">
 
 > [V1 Demo YouTube video](https://youtu.be/G0m2wwEppWA) | [V2 Code walkthrough YouTube video](https://youtu.be/Ca8nKtICYMk)
